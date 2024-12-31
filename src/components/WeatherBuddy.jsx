@@ -5,7 +5,8 @@ import { CiLocationArrow1 } from "react-icons/ci";
 import { FaLocationDot } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { DotLoader } from "react-spinners";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const WeatherBuddy = () => {
   const [data, setdata] = useState([]);
@@ -13,16 +14,14 @@ const WeatherBuddy = () => {
   const [currentTime, setCurrentTime] = useState("");
   const [query, setquery] = useState("");
   const [isloading, setisloading] = useState(true);
-  const [unit, setUnit] = useState("metric");
-  const toggleUnit = () => {
-    setUnit((prevUnit) => (prevUnit === "metric" ? "imperial" : "metric"));
-  };
-  const unitText = unit === "metric" ? "Metric °C" : "Imperial °F";
+  const [showskeleton, setshowskeleton] = useState(false);
 
   const getWeatherDetails = async () => {
-    setisloading(true);
+    setshowskeleton(true);
     if (!query) {
       toast.error("Please Enter Place in Serch Box.");
+      setisloading(true);
+      setshowskeleton(false);
       return;
     }
     try {
@@ -103,6 +102,7 @@ const WeatherBuddy = () => {
       }
 
       setForecast(formattedData);
+      setshowskeleton(false);
     } catch (error) {
       if (error.response.data.cod == 404) {
         toast.error(error.response.data.message);
@@ -336,31 +336,41 @@ const WeatherBuddy = () => {
               </div>
 
               <div className="overflow-x-auto md:overflow-visible mb-6">
-                <div className="grid pb-5 grid-cols-6 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-max md:min-w-full">
-                  {weekForecast.map((forecastItem, index) => {
-                    const date = new Date(forecastItem.date);
-                    const dayName = daysOfWeek[date.getDay()];
-                    return (
-                      <div
-                        key={forecastItem.date}
-                        className="flex bg-gray-700 hover:bg-gray-600 px-4 py-6 md:rounded-lg rounded-b-full rounded-t-full flex-col items-center space-y-2"
-                      >
-                        <p className="text-gray-300">{dayName}</p>
-                        <div className="w-20 h-20 rounded-full flex items-center justify-center">
-                          <img
-                            src={weatherIcons[forecastItem.icon]}
-                            alt=""
-                            className="bg-gray-600 rounded-full"
-                          />
-                        </div>
-                        <p className="text-gray-300">
-                          {forecastItem.tempMin.toFixed(0)}°C -{" "}
-                          {forecastItem.tempMax.toFixed(0)}°C
-                        </p>
+                {isloading ? (
+                  <div className="w-full pb-5 flex gap-4 min-w-max justify-start">
+                    <div className="flex bg-gray-700 hover:bg-gray-600 px-4 py-6 md:rounded-lg rounded-b-full rounded-t-full flex-col items-center space-y-2 w-full">
+                      <div className="w-20 h-20 rounded-full flex items-center justify-center">
+                        <span className="text-7xl text-gray-400">N/A</span>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid pb-5 grid-cols-6 md:grid-cols-3 lg:grid-cols-5 gap-4 min-w-max md:min-w-full">
+                    {weekForecast.map((forecastItem, index) => {
+                      const date = new Date(forecastItem.date);
+                      const dayName = daysOfWeek[date.getDay()];
+                      return (
+                        <div
+                          key={forecastItem.date}
+                          className="flex bg-gray-700 hover:bg-gray-600 px-4 py-6 md:rounded-lg rounded-b-full rounded-t-full flex-col items-center space-y-2"
+                        >
+                          <p className="text-gray-300">{dayName}</p>
+                          <div className="w-20 h-20 rounded-full flex items-center justify-center">
+                            <img
+                              src={weatherIcons[forecastItem.icon]}
+                              alt=""
+                              className="bg-gray-600 rounded-full"
+                            />
+                          </div>
+                          <p className="text-gray-300">
+                            {forecastItem.tempMin.toFixed(0)}°C -{" "}
+                            {forecastItem.tempMax.toFixed(0)}°C
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               {/* Highlights */}
               <h2 className="text-2xl font-medium inline-block mb-4 border-b-2 border-blue-400">
@@ -368,126 +378,228 @@ const WeatherBuddy = () => {
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {/* Wind Status */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400">Wind Status</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height={80}
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <div>
-                      <p className="text-3xl font-bold text-white">
-                        {data.citywindspeed} km/h
-                      </p>
-                      <div className="text-gray-400 flex border-t-2 border-gray-600 pt-2 my-3 items-center justify-start space-x-2">
-                        <p>{getWindDirection(data.citywinddeg)}</p>
-                        <span
-                          className="text-red-400 text-xl"
-                          style={{
-                            transform: `rotate(${data.citywinddeg}deg)`,
-                          }}
-                        >
-                          ➤
-                        </span>
-                      </div>
-                    </div>
+                    <>
+                      <h3 className="text-gray-400">Wind Status</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <div>
+                          <p className="text-3xl font-bold text-white">
+                            {data.citywindspeed} km/h
+                          </p>
+                          <div className="text-gray-400 flex border-t-2 border-gray-600 pt-2 my-3 items-center justify-start space-x-2">
+                            <p>{getWindDirection(data.citywinddeg)}</p>
+                            <span
+                              className="text-red-400 text-xl"
+                              style={{
+                                transform: `rotate(${data.citywinddeg}deg)`,
+                              }}
+                            >
+                              ➤
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Sunrise */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400 mb-2">Sunrise</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height="100%"
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <p className="text-3xl font-bold text-white">
-                      {formatTime(data.citysunrise)}
-                    </p>
+                    <>
+                      <h3 className="text-gray-400 mb-2">Sunrise</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <p className="text-3xl font-bold text-white">
+                          {formatTime(data.citysunrise)}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Sunset */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400 mb-2">Sunset</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height="100%"
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <p className="text-3xl font-bold text-white">
-                      {formatTime(data.citysunset)}
-                    </p>
+                    <>
+                      <h3 className="text-gray-400 mb-2">Sunset</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <p className="text-3xl font-bold text-white">
+                          {formatTime(data.citysunset)}
+                        </p>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Humidity */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400 mb-2">Humidity</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height={80}
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <div>
-                      <p className="text-3xl font-bold text-white">
-                        {data.cityhumidity}%
-                      </p>
-                      <div className="w-full bg-gray-600 h-4 rounded-lg mt-4 relative overflow-hidden">
-                        <div
-                          className={`h-full rounded-lg ${
-                            data.cityhumidity < 30
-                              ? "bg-blue-500"
+                    <>
+                      <h3 className="text-gray-400 mb-2">Humidity</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <div>
+                          <p className="text-3xl font-bold text-white">
+                            {data.cityhumidity}%
+                          </p>
+                          <div className="w-full bg-gray-600 h-4 rounded-lg mt-4 relative overflow-hidden">
+                            <div
+                              className={`h-full rounded-lg ${
+                                data.cityhumidity < 30
+                                  ? "bg-blue-500"
+                                  : data.cityhumidity <= 60
+                                  ? "bg-green-500"
+                                  : "bg-red-500"
+                              }`}
+                              style={{ width: `${data.cityhumidity}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-gray-400 mt-2">
+                            {data.cityhumidity < 30
+                              ? "Low"
                               : data.cityhumidity <= 60
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                          style={{ width: `${data.cityhumidity}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-gray-400 mt-2">
-                        {data.cityhumidity < 30
-                          ? "Low"
-                          : data.cityhumidity <= 60
-                          ? "Normal"
-                          : "High"}
-                      </p>
-                    </div>
+                              ? "Normal"
+                              : "High"}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Visibility */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400 mb-2">Visibility</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height="100%"
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <div>
-                      <p className="text-3xl font-bold text-white">
-                        {(data.cityvisibility / 1000).toFixed(1)} km
-                      </p>
-                      <p className="text-gray-400">
-                        {data.cityvisibility < 2000
-                          ? "Low"
-                          : data.cityvisibility <= 6000
-                          ? "Average"
-                          : "High"}
-                      </p>
-                    </div>
+                    <>
+                      <h3 className="text-gray-400 mb-2">Visibility</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <div>
+                          <p className="text-3xl font-bold text-white">
+                            {(data.cityvisibility / 1000).toFixed(1)} km
+                          </p>
+                          <p className="text-gray-400">
+                            {data.cityvisibility < 2000
+                              ? "Low"
+                              : data.cityvisibility <= 6000
+                              ? "Average"
+                              : "High"}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Air Pressure */}
-                <div className="bg-gray-700 hover:bg-gray-600 p-4 rounded-lg shadow">
-                  <h3 className="text-gray-400 mb-2">Air Pressure</h3>
-                  {isloading ? (
-                    <p className="text-gray-400">N/A</p>
+                <div
+                  className={` ${
+                    showskeleton ? "" : "p-4 bg-gray-700"
+                  } hover:bg-gray-600 rounded-lg shadow`}
+                >
+                  {showskeleton ? (
+                    <Skeleton
+                      width="100%"
+                      height="100%"
+                      shiver={true}
+                      baseColor="#424242"
+                      highlightColor="#6200EE"
+                      borderRadius={12}
+                    />
                   ) : (
-                    <div>
-                      <p className="text-3xl font-bold text-white">
-                        {data.citypressure} hPa
-                      </p>
-                      <p className="text-gray-400">
-                        {data.citypressure < 1000
-                          ? "Low Pressure"
-                          : data.citypressure <= 1020
-                          ? "Normal Pressure"
-                          : "High Pressure"}
-                      </p>
-                    </div>
+                    <>
+                      <h3 className="text-gray-400 mb-2">Air Pressure</h3>
+                      {isloading ? (
+                        <p className="text-gray-400">N/A</p>
+                      ) : (
+                        <div>
+                          <p className="text-3xl font-bold text-white">
+                            {data.citypressure} hPa
+                          </p>
+                          <p className="text-gray-400">
+                            {data.citypressure < 1000
+                              ? "Low Pressure"
+                              : data.citypressure <= 1020
+                              ? "Normal Pressure"
+                              : "High Pressure"}
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

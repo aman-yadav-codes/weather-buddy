@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import gifIcons from "../assets/GifIcons";
 import { Link } from "react-router-dom";
-
+import gsap from "gsap"; // Import GSAP
 
 const Home = () => {
   const gifKeys = Object.keys(gifIcons); // Get all keys from the gifIcons object
   const [currentIcon, setCurrentIcon] = useState(gifIcons[gifKeys[0]]); // Initialize with the first icon
   const [currentIndex, setCurrentIndex] = useState(0); // Track the current index
+  const imageRef = useRef(null); // Create a reference to the image element
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % gifKeys.length); // Increment index safely
-    }, 3000); // Change every 2 seconds
+    }, 3000); // Change every 3 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [gifKeys.length]);
@@ -19,6 +20,28 @@ const Home = () => {
   useEffect(() => {
     setCurrentIcon(gifIcons[gifKeys[currentIndex]]); // Update the current icon based on the index
   }, [currentIndex, gifKeys, gifIcons]);
+
+  useEffect(() => {
+    // GSAP animation to bring the image from top to center and then move it down
+    gsap.fromTo(
+      imageRef.current,
+      { y: -450, opacity: 0 }, // Start position (above screen and transparent)
+      {
+        y: 0, // End position (center)
+        opacity: 1, // Fully visible
+        duration: 1.5, // Slightly slower for a smoother feel
+        ease: "power4.out", // Smoother easing for a more fluid motion
+        onComplete: () => {
+          // After reaching the center, move it downwards
+          gsap.to(imageRef.current, {
+            y: 450, // Move downwards smoothly
+            duration: 1.5, // Extend the duration for a smoother descent
+            ease: "power4.inOut", // Smooth ease-in and ease-out for downward motion
+          });
+        },
+      }
+    );
+  }, [currentIcon]); // Trigger animation every time the currentIcon changes
 
   return (
     <section
@@ -47,6 +70,7 @@ const Home = () => {
           <div className="absolute inset-0 rounded-full"></div>
           <img
             id="weather-image"
+            ref={imageRef} // Set the ref to image element
             src={currentIcon} // Dynamically updates with gifIcons
             alt="Weather Icon"
             className="w-full rounded-full h-auto shadow-lg relative z-10"

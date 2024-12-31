@@ -8,14 +8,14 @@ import weather from "./gifs/weather.gif";
 import wind from "./gifs/wind.gif";
 
 export const GifIcons = {
+  weather: weather,
   drops: drops,
   hail: hail,
   rain: rain,
   snowflake: snowflake,
   sun: sun,
   storm: storm,
-  weather: weather,
-  wind: wind,
+  wind: wind
 };
 
 export default GifIcons;
