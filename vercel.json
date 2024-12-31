@@ -1,5 +1,10 @@
 {
-    "buildCommand": "bun install && bun run build",
-    "installCommand": "bun install"
-  }
-  
+  "buildCommand": "bun install && bun run build",
+  "installCommand": "bun install",
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}
