@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,24 +46,24 @@ const Navbar = () => {
       {/* Desktop Links */}
       <ul className="hidden md:flex space-x-6 text-xl">
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/" data-discover="true">
+          <Link className="block px-4 py-2" to="/" data-discover="true">
             Home
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/About" data-discover="true">
+          <Link className="block px-4 py-2" to="/About" data-discover="true">
             About
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/Usage" data-discover="true">
+          <Link className="block px-4 py-2" to="/Usage" data-discover="true">
             Usage
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/Github" data-discover="true">
+          <Link className="block px-4 py-2" to="/Github" data-discover="true">
             Github
-          </a>
+          </Link>
         </li>
       </ul>
 
@@ -98,24 +99,24 @@ const Navbar = () => {
         } dark:bg-black bg-slate-300 border rounded-b p-4 absolute top-14 right-6 text-xl transition duration-300 ease-in-out md:hidden`}
       >
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/" data-discover="true">
+          <Link className="block px-4 py-2" to="/" data-discover="true">
             Home
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/About" data-discover="true">
+          <Link className="block px-4 py-2" to="/About" data-discover="true">
             About
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/Usage" data-discover="true">
+          <Link className="block px-4 py-2" to="/Usage" data-discover="true">
             Usage
-          </a>
+          </Link>
         </li>
         <li className="hover:bg-white hover:text-black hover:rounded w-full h-full">
-          <a className="block px-4 py-2" href="/Github" data-discover="true">
+          <Link className="block px-4 py-2" to="/Github" data-discover="true">
             Github
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
