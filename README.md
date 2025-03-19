@@ -55,7 +55,6 @@ Welcome to **Weather Buddy**, your ultimate weather tracking companion! Powered 
 
 ---
 
----
 
 ### 🌍 Discover the Emojiverse!
 
