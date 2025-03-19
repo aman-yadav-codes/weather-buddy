@@ -55,10 +55,6 @@ Welcome to **Weather Buddy**, your ultimate weather tracking companion! Powered 
 
 ---
 
-#### 📋 License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
 ---
 
 ### 🌍 Discover the Emojiverse!
